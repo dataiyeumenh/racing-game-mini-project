@@ -1,0 +1,5 @@
+# Tell GitHub Linguist to ignore generated/build files
+build/** linguist-generated=true
+android/** linguist-vendored=true
+ios/** linguist-vendored=true
+*.g.dart linguist-generated=true
