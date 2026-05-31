@@ -31,40 +31,38 @@ class ResultPanel extends StatelessWidget {
     final winnerCow = winnerIndex >= 0 ? cows[winnerIndex] : null;
 
     return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFF0D2B0D),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-        boxShadow: [BoxShadow(color: Colors.black45, blurRadius: 8)],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildEffect(),
-          const SizedBox(height: 6),
-          _buildResultTitle(),
-          if (winnerCow != null) ...[
-            const SizedBox(height: 4),
-            Text(
-              '🏆 ${winnerCow.label} về đích đầu tiên!',
-              style: const TextStyle(color: Colors.white70, fontSize: 13),
-            ),
-          ],
-          const SizedBox(height: 10),
-          _buildCowBreakdown(),
-          const SizedBox(height: 10),
-          _buildNetResult(),
-          const SizedBox(height: 10),
-          _buildPlayAgainButton(),
-          if (balance <= 0 && onGetFreeCoins != null)
-            TextButton(
-              onPressed: onGetFreeCoins,
-              child: const Text(
-                'Nhận 1000 coins miễn phí',
-                style: TextStyle(color: Colors.amber),
+      color: const Color(0xE6071A07), // ~90% opaque dark green
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildEffect(),
+            const SizedBox(height: 10),
+            _buildResultTitle(),
+            if (winnerCow != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                '🏆 ${winnerCow.label} về đích đầu tiên!',
+                style: const TextStyle(color: Colors.white70, fontSize: 13),
               ),
-            ),
-        ],
+            ],
+            const SizedBox(height: 10),
+            _buildCowBreakdown(),
+            const SizedBox(height: 10),
+            _buildNetResult(),
+            const SizedBox(height: 10),
+            _buildPlayAgainButton(),
+            if (balance <= 0 && onGetFreeCoins != null)
+              TextButton(
+                onPressed: onGetFreeCoins,
+                child: const Text(
+                  'Nhận 1000 coins miễn phí',
+                  style: TextStyle(color: Colors.amber),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -74,9 +72,9 @@ class ResultPanel extends StatelessWidget {
       _didWin
           ? 'assets/images/win_effect.png'
           : 'assets/images/lose_effect.png',
-      height: 50,
+      height: 100,
       errorBuilder: (_, _, _) =>
-          Text(_didWin ? '🎉' : '💸', style: const TextStyle(fontSize: 40)),
+          Text(_didWin ? '🎉' : '💸', style: const TextStyle(fontSize: 72)),
     );
   }
 
@@ -85,9 +83,9 @@ class ResultPanel extends StatelessWidget {
       _didWin ? 'THẮNG!' : 'THUA!',
       style: TextStyle(
         color: _didWin ? Colors.amber : Colors.redAccent,
-        fontSize: 26,
+        fontSize: 48,
         fontWeight: FontWeight.bold,
-        letterSpacing: 3,
+        letterSpacing: 6,
       ),
     );
   }
@@ -119,22 +117,22 @@ class ResultPanel extends StatelessWidget {
               children: [
                 Image.asset(
                   cow.idleFrame,
-                  width: 38,
-                  height: 38,
+                  width: 56,
+                  height: 56,
                   fit: BoxFit.contain,
                   errorBuilder: (_, _, _) =>
-                      Container(width: 38, height: 38, color: cow.color),
+                      Container(width: 56, height: 56, color: cow.color),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   cow.label,
                   style: TextStyle(
                     color: isWinner ? Colors.amber : Colors.white54,
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const SizedBox(height: 3),
+                const SizedBox(height: 4),
                 if (bet > 0) ...[
                   Text(
                     'Cược: $bet xu',
@@ -194,7 +192,7 @@ class ResultPanel extends StatelessWidget {
   Widget _buildPlayAgainButton() {
     return SizedBox(
       width: double.infinity,
-      height: 44,
+      height: 52,
       child: ElevatedButton(
         onPressed: balance > 0 ? onPlayAgain : null,
         style: ElevatedButton.styleFrom(

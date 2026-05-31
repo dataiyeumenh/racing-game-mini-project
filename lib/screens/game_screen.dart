@@ -186,12 +186,39 @@ class _GameScreenState extends State<GameScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFF1A3A1A),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            _buildHeader(),
-            _buildTrack(),
-            const SizedBox(height: 8),
-            _buildBottomPanel(),
+            // Main game UI always present underneath
+            Column(
+              children: [
+                _buildHeader(),
+                _buildTrack(),
+                const SizedBox(height: 8),
+                BettingPanel(
+                  phase: _phase,
+                  cows: _cows,
+                  betAmounts: _betAmounts,
+                  confirmedBets: _confirmedBets,
+                  balance: _balance,
+                  totalEntered: _totalEntered,
+                  onStartRace: _startRace,
+                  onIncrease: _increaseBet,
+                  onDecrease: _decreaseBet,
+                ),
+              ],
+            ),
+            // Full-screen result overlay
+            if (_phase == GamePhase.finished)
+              Positioned.fill(
+                child: ResultPanel(
+                  cows: _cows,
+                  winnerIndex: _winnerIndex,
+                  confirmedBets: _confirmedBets,
+                  balance: _balance,
+                  onPlayAgain: _balance > 0 ? _resetGame : null,
+                  onGetFreeCoins: _balance <= 0 ? _freeCoins : null,
+                ),
+              ),
           ],
         ),
       ),
@@ -335,31 +362,6 @@ class _GameScreenState extends State<GameScreen> {
           );
         },
       ),
-    );
-  }
-
-  Widget _buildBottomPanel() {
-    if (_phase == GamePhase.finished) {
-      return ResultPanel(
-        cows: _cows,
-        winnerIndex: _winnerIndex,
-        confirmedBets: _confirmedBets,
-        balance: _balance,
-        onPlayAgain: _balance > 0 ? _resetGame : null,
-        onGetFreeCoins: _balance <= 0 ? _freeCoins : null,
-      );
-    }
-
-    return BettingPanel(
-      phase: _phase,
-      cows: _cows,
-      betAmounts: _betAmounts,
-      confirmedBets: _confirmedBets,
-      balance: _balance,
-      totalEntered: _totalEntered,
-      onStartRace: _startRace,
-      onIncrease: _increaseBet,
-      onDecrease: _decreaseBet,
     );
   }
 }
