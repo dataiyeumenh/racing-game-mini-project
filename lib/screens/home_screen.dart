@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'game_screen.dart';
+import 'login_screen.dart';
 import '../services/audio_service.dart';
+import '../services/auth_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -213,7 +215,66 @@ class _HomeScreenState extends State<HomeScreen>
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 24),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black.withAlpha(80),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.amber.withAlpha(60)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.person_rounded,
+                              size: 16,
+                              color: Colors.amber.shade300,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              AuthService.instance.currentUsername ?? 'Player',
+                              style: TextStyle(
+                                color: Colors.amber.shade100,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Spacer(),
+                      IconButton(
+                        tooltip: 'Đăng xuất',
+                        onPressed: () async {
+                          await AuthService.instance.logout();
+                          if (!context.mounted) return;
+                          Navigator.of(context).pushReplacement(
+                            PageRouteBuilder(
+                              pageBuilder: (_, anim, __) =>
+                                  const LoginScreen(),
+                              transitionsBuilder: (_, anim, __, child) =>
+                                  FadeTransition(opacity: anim, child: child),
+                              transitionDuration:
+                                  const Duration(milliseconds: 400),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.logout_rounded,
+                          color: Colors.white.withAlpha(180),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 8),
 
                 // Trophy icon
                 const Text('🏆', style: TextStyle(fontSize: 48)),

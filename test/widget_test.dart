@@ -6,14 +6,23 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:cow_racing/main.dart';
+import 'package:cow_racing/services/auth_service.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() async {
+    SharedPreferences.setMockInitialValues({});
+    await AuthService.instance.init();
+  });
+
   testWidgets('App smoke test', (WidgetTester tester) async {
     await tester.pumpWidget(const CowRacingApp());
+    await tester.pumpAndSettle();
 
-    // Verify the app builds without crashing.
     expect(find.byType(CowRacingApp), findsOneWidget);
   });
 }
