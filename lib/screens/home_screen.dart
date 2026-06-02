@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'game_screen.dart';
 import 'login_screen.dart';
+import '../core/constants.dart';
 import '../services/audio_service.dart';
 import '../services/auth_service.dart';
 
@@ -27,6 +28,8 @@ class _HomeScreenState extends State<HomeScreen>
   // Title pulse animation
   late AnimationController _pulseController;
   late Animation<double> _pulseAnim;
+
+  bool _showGuide = false;
 
   static const _cowAssets = [
     'assets/images/cow_brown_run_frame_',
@@ -257,12 +260,12 @@ class _HomeScreenState extends State<HomeScreen>
                           if (!context.mounted) return;
                           Navigator.of(context).pushReplacement(
                             PageRouteBuilder(
-                              pageBuilder: (_, anim, __) =>
-                                  const LoginScreen(),
+                              pageBuilder: (_, anim, __) => const LoginScreen(),
                               transitionsBuilder: (_, anim, __, child) =>
                                   FadeTransition(opacity: anim, child: child),
-                              transitionDuration:
-                                  const Duration(milliseconds: 400),
+                              transitionDuration: const Duration(
+                                milliseconds: 400,
+                              ),
                             ),
                           );
                         },
@@ -416,8 +419,211 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
 
+                const SizedBox(height: 16),
+
+                // Guide button
+                GestureDetector(
+                  onTap: () => setState(() => _showGuide = true),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 32,
+                      vertical: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(100),
+                      borderRadius: BorderRadius.circular(24),
+                      border: Border.all(
+                        color: Colors.amber.withAlpha(120),
+                        width: 1.5,
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SizedBox(width: 8),
+                        Text(
+                          'HƯỚNG DẪN',
+                          style: TextStyle(
+                            color: Colors.amber,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
                 const SizedBox(height: 32),
               ],
+            ),
+          ),
+
+          // ── Guide overlay ──
+          if (_showGuide) Positioned.fill(child: _buildGuideOverlay()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGuideOverlay() {
+    return Container(
+      color: const Color(0xEA071A07),
+      child: SafeArea(
+        child: Column(
+          children: [
+            // Header bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: () => setState(() => _showGuide = false),
+                    child: Container(
+                      width: 36,
+                      height: 36,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withAlpha(20),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white38),
+                      ),
+                      child: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.white70,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Divider(color: Colors.amber.withAlpha(60), height: 1),
+
+            // Scrollable content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Section 1: Giới thiệu ──
+                    _guideSection(
+                      icon: '',
+                      title: 'Giới thiệu trò chơi',
+                      content: [
+                        'Đua Bò là trò chơi đặt cược đua bò thú vị dành cho mọi lứa tuổi.',
+                        'Mỗi vòng đua có 3 chú bò tham gia: Bò Nâu, Bò Sữa và Bò Đỏ.',
+                        'Người chơi bắt đầu với ${kInitialBalance} xu và đặt cược vào chú bò mình nghĩ sẽ thắng.',
+                        'Nếu bò bạn chọn về nhất, bạn sẽ nhận được tiền thưởng gấp $kMultiplier lần số xu đặt cược!',
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // ── Section 2: Hướng dẫn chơi ──
+                    _guideSection(
+                      icon: '',
+                      title: 'Hướng dẫn chơi',
+                      content: [
+                        '1️⃣  Nhấn "START" để vào màn hình đặt cược.',
+                        '2️⃣  Chọn số xu đặt cược cho từng chú bò bằng các nút + / −.',
+                        '3️⃣  Nhấn "START" để phát lệnh xuất phát. Tiền cược sẽ bị trừ ngay lúc này.',
+                        '4️⃣  Xem cuộc đua diễn ra — tốc độ mỗi bò được tính ngẫu nhiên mỗi vòng!',
+                        '5️⃣  Sau khi có kết quả, bảng thắng/thua sẽ hiển thị số xu bạn nhận lại.',
+                        '💡  Mẹo: Chia cược vào nhiều bò để tăng cơ hội thắng, nhưng lợi nhuận sẽ thấp hơn.',
+                        '🆓  Hết xu? Nhấn "Nhận 1000 coins miễn phí" để chơi tiếp!',
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // Close button at bottom
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 20),
+              child: GestureDetector(
+                onTap: () => setState(() => _showGuide = false),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFFFB300), Color(0xFFFF8C00)],
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.amber.withAlpha(80),
+                        blurRadius: 12,
+                      ),
+                    ],
+                  ),
+                  child: const Text(
+                    'Đã hiểu!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.black87,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _guideSection({
+    required String icon,
+    required String title,
+    required List<String> content,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withAlpha(10),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.amber.withAlpha(60)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(icon, style: const TextStyle(fontSize: 22)),
+              const SizedBox(width: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.amber,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          ...content.map(
+            (line) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(
+                line,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13.5,
+                  height: 1.5,
+                ),
+              ),
             ),
           ),
         ],

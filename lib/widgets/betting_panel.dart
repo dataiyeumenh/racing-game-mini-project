@@ -56,7 +56,7 @@ class BettingPanel extends StatelessWidget {
 
   Widget _buildTitle() {
     return Text(
-      _isBetting ? 'ĐẶT CƯỢC (có thể chọn nhiều bò)' : '🏁 ĐANG ĐUA...',
+      _isBetting ? 'ĐẶT CƯỢC' : 'ĐANG ĐUA...',
       style: TextStyle(
         color: Colors.amber,
         fontWeight: FontWeight.bold,
